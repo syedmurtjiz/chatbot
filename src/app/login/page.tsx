@@ -15,13 +15,20 @@ function Spinner() {
 
 function LoginForm() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     const formData = new FormData(e.currentTarget);
-    await login(formData);
-    setLoading(false);
+    const result = await login(formData);
+    if (result && result.error) {
+      setError(result.error);
+      setLoading(false);
+      return;
+    }
+    // On success, redirect will happen server-side
   }
 
   return (
@@ -62,6 +69,9 @@ function LoginForm() {
           />
         </div>
       </div>
+      {error && (
+        <div className="text-red-600 text-sm text-center">{error}</div>
+      )}
       <button
         type="submit"
         disabled={loading}
@@ -76,13 +86,20 @@ function LoginForm() {
 
 function SignupForm() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     const formData = new FormData(e.currentTarget);
-    await signup(formData);
-    setLoading(false);
+    const result = await signup(formData);
+    if (result && result.error) {
+      setError(result.error);
+      setLoading(false);
+      return;
+    }
+    // On success, redirect will happen server-side
   }
 
   return (
@@ -123,6 +140,9 @@ function SignupForm() {
           />
         </div>
       </div>
+      {error && (
+        <div className="text-red-600 text-sm text-center">{error}</div>
+      )}
       <button
         type="submit"
         disabled={loading}
