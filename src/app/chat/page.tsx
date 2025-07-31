@@ -221,7 +221,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#c9e7fa] via-[#f7e8ff] to-[#fbeee6] relative">
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-[#c9e7fa] via-[#f7e8ff] to-[#fbeee6] relative max-w-full overflow-x-hidden">
       {/* Custom CSS for animations */}
       <style jsx>{`
         @keyframes slideInFromLeft {
@@ -290,18 +290,18 @@ export default function ChatPage() {
       `}</style>
 
       {/* Header */}
-      <header className="sticky top-0 z-10 flex items-center justify-between px-8 py-5 bg-white/40 backdrop-blur-md shadow-lg rounded-b-2xl border-b border-white/30 animate-fade-in">
+      <header className="sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-5 bg-white/40 backdrop-blur-md shadow-lg rounded-b-2xl border-b border-white/30 animate-fade-in">
         <div className="flex items-center gap-4">
-          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 shadow-lg animate-scale-in">
-            <FaRobot className="h-7 w-7 text-white" />
+          <span className="inline-flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 shadow-lg animate-scale-in">
+            <FaRobot className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
           </span>
-          <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-500 tracking-tight animate-slide-in-left">
+          <span className="text-xl sm:text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-blue-500 tracking-tight animate-slide-in-left">
             ClaudeSpark
           </span>
         </div>
         <form action={logout}>
           <button
-            className="px-5 py-2 rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg hover:scale-105 transition-all duration-200 hover:shadow-xl animate-slide-in-right"
+            className="px-4 py-1.5 sm:px-5 sm:py-2 text-sm sm:text-base rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg hover:scale-105 transition-all duration-200 hover:shadow-xl animate-slide-in-right"
             type="submit"
           >
             Sign Out
@@ -311,8 +311,8 @@ export default function ChatPage() {
 
       {/* Chat Area */}
       <main className="flex-1 flex flex-col items-center justify-center px-2 py-8">
-        <div className="w-full max-w-2xl flex-1 flex flex-col rounded-3xl bg-white/40 backdrop-blur-lg shadow-2xl mt-4 mb-4 border border-white/30 animate-scale-in">
-          <div className="flex-1 flex flex-col gap-4 p-6 overflow-y-auto" style={{ maxHeight: '60vh' }}>
+        <div className="w-full max-w-2xl flex-1 flex flex-col rounded-3xl bg-white/40 backdrop-blur-lg shadow-2xl mt-2 mb-2 sm:mt-4 sm:mb-4 mx-2 sm:mx-4 border border-white/30 animate-scale-in">
+          <div className="flex-1 flex flex-col gap-3 sm:gap-4 p-3 sm:p-4 md:p-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
             {messages.map((msg, index) => (
               <div
                 key={msg.id}
@@ -329,13 +329,13 @@ export default function ChatPage() {
                   </span>
                 )}
                 <div
-                  className={`relative px-5 py-3 rounded-2xl max-w-[70%] shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
+                  className={`relative px-4 py-2 sm:px-5 sm:py-3 rounded-2xl max-w-[85%] sm:max-w-[75%] md:max-w-[70%] shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 ${
                     msg.user.name === demoUser.name
                       ? 'bg-gradient-to-br from-blue-400 to-purple-400 text-white rounded-br-none'
                       : 'bg-white/80 text-gray-800 border border-purple-100 rounded-bl-none'
                   }`}
                 >
-                  <div className="text-base font-medium">{msg.text}</div>
+                  <div className="text-sm sm:text-base font-medium break-words">{msg.text}</div>
                   <div
                     className={`text-xs mt-2 ${
                       msg.user.name === demoUser.name ? 'text-blue-100' : 'text-gray-400'
@@ -363,12 +363,12 @@ export default function ChatPage() {
       {/* Input Bar */}
       <form
         onSubmit={handleSend}
-        className="sticky bottom-0 z-10 w-full max-w-2xl mx-auto flex items-center gap-3 px-6 py-4 bg-white/60 backdrop-blur-xl rounded-t-2xl shadow-2xl border-t border-white/30 animate-fade-in"
+        className="sticky bottom-0 z-10 w-full max-w-2xl mx-auto flex items-center gap-2 sm:gap-3 px-3 sm:px-4 md:px-6 py-3 sm:py-4 bg-white/60 backdrop-blur-xl rounded-t-2xl shadow-2xl border-t border-white/30 animate-fade-in"
         style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
       >
         <input
           type="text"
-          className="flex-1 px-5 py-3 rounded-full border-none bg-white/70 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-800 text-lg placeholder:text-gray-400 transition-all duration-200 focus:shadow-lg focus:bg-white/90"
+          className="flex-1 px-3 sm:px-4 py-2 sm:py-3 rounded-full border-none bg-white/70 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-300 text-gray-800 text-base sm:text-lg placeholder:text-gray-400 transition-all duration-200 focus:shadow-lg focus:bg-white/90"
           placeholder="Type your message…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -377,7 +377,7 @@ export default function ChatPage() {
         <button
           type="submit"
           disabled={isTyping}
-          className="px-6 py-3 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg hover:scale-105 transition-all duration-200 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="px-4 sm:px-5 py-2 sm:py-3 rounded-full font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm sm:text-base shadow-lg hover:scale-105 transition-all duration-200 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 whitespace-nowrap"
         >
           {isTyping ? (
             <div className="flex items-center gap-2">
@@ -391,8 +391,8 @@ export default function ChatPage() {
       </form>
 
       {/* Decorative circles with animation */}
-      <div className="pointer-events-none fixed -z-10 top-[-100px] left-[-100px] w-[300px] h-[300px] rounded-full bg-purple-200 opacity-40 blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
-      <div className="pointer-events-none fixed -z-10 bottom-[-120px] right-[-120px] w-[350px] h-[350px] rounded-full bg-blue-200 opacity-40 blur-3xl animate-pulse" style={{ animationDuration: '6s' }}></div>
+      <div className="pointer-events-none fixed -z-10 top-[-50px] sm:top-[-100px] left-[-50px] sm:left-[-100px] w-[200px] h-[200px] sm:w-[300px] sm:h-[300px] rounded-full bg-purple-200 opacity-40 blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+      <div className="pointer-events-none fixed -z-10 bottom-[-60px] sm:bottom-[-120px] right-[-60px] sm:right-[-120px] w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] rounded-full bg-blue-200 opacity-40 blur-3xl animate-pulse" style={{ animationDuration: '6s' }}></div>
     </div>
   );
 }
