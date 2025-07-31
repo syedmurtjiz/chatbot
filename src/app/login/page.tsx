@@ -4,9 +4,28 @@ import { useState } from 'react';
 import { login, signup } from './actions'
 import { FaUserCircle, FaEnvelope, FaLock } from 'react-icons/fa';
 
-function LoginForm() {
+function Spinner() {
   return (
-    <form className="space-y-6">
+    <svg className="animate-spin h-5 w-5 mr-2 inline-block text-white" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+    </svg>
+  );
+}
+
+function LoginForm() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    await login(formData);
+    setLoading(false);
+  }
+
+  return (
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1">
           Email Address
@@ -44,9 +63,11 @@ function LoginForm() {
         </div>
       </div>
       <button
-        formAction={login}
-        className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 rounded-lg shadow-lg transition"
+        type="submit"
+        disabled={loading}
+        className={`w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-2 rounded-lg shadow-lg transition flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
+        {loading && <Spinner />}
         Log in
       </button>
     </form>
@@ -54,8 +75,18 @@ function LoginForm() {
 }
 
 function SignupForm() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    await signup(formData);
+    setLoading(false);
+  }
+
   return (
-    <form className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSubmit}>
       <div>
         <label htmlFor="signup-email" className="block text-sm font-semibold text-gray-700 mb-1">
           Email Address
@@ -93,9 +124,11 @@ function SignupForm() {
         </div>
       </div>
       <button
-        formAction={signup}
-        className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-2 rounded-lg shadow-lg transition"
+        type="submit"
+        disabled={loading}
+        className={`w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-2 rounded-lg shadow-lg transition flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
+        {loading && <Spinner />}
         Sign up
       </button>
     </form>
