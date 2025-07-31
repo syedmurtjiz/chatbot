@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { logout } from '../logout/actions';
 import { FaUserCircle, FaRobot } from 'react-icons/fa';
+import { createClient } from '@/utils/supabase/client';
 
 const demoUser = {
   name: 'You',
@@ -28,14 +29,104 @@ export default function ChatPage() {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMessages([
-      {
-        id: 1,
-        user: botUser,
-        text: "👋 Hi! I'm your AI assistant (Claude). How can I help you today?",
-        time: formatTime(new Date()),
-      },
-    ]);
+    const loadMessages = async () => {
+      try {
+        console.log('Loading messages...');
+        const supabase = createClient();
+        
+        // Get current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        console.log('Session data:', { session, sessionError });
+        
+        if (!session?.user) {
+          console.log('No user session found');
+          return;
+        }
+
+        console.log('Fetching messages for user:', session.user.id);
+        // Fetch messages from Supabase
+        const { data: messages, error, status } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: true });
+
+        console.log('Messages fetch status:', status);
+        if (error) {
+          console.error('Error fetching messages:', error);
+          throw error;
+        }
+
+        if (messages && messages.length > 0) {
+          console.log(`Found ${messages.length} messages`);
+          // Transform messages to the format expected by the component
+          const formattedMessages = messages.map((msg: any) => ({
+            id: msg.id,
+            user: msg.is_bot ? botUser : demoUser,
+            text: msg.text,
+            time: formatTime(new Date(msg.created_at)),
+          }));
+          console.log('Formatted messages:', formattedMessages);
+          setMessages(formattedMessages);
+        } else {
+          console.log('No messages found in the database');
+          // No messages yet, show welcome message
+          setMessages([
+            {
+              id: 1,
+              user: botUser,
+              text: "👋 Hi! I'm your AI assistant (Claude). How can I help you today?",
+              time: formatTime(new Date()),
+            },
+          ]);
+        }
+      } catch (error) {
+        console.error('Error loading messages:', error);
+        // Fallback to welcome message if there's an error
+        setMessages([
+          {
+            id: 1,
+            user: botUser,
+            text: "👋 Hi! I'm your AI assistant (Claude). How can I help you today?",
+            time: formatTime(new Date()),
+          },
+        ]);
+      }
+    };
+
+    loadMessages();
+
+    // Set up real-time subscription
+    const supabase = createClient();
+    const channel = supabase
+      .channel('messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+        },
+        (payload) => {
+          const newMessage = payload.new as any;
+          if (newMessage) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: newMessage.id,
+                user: newMessage.is_bot ? botUser : demoUser,
+                text: newMessage.text,
+                time: formatTime(new Date(newMessage.created_at)),
+              },
+            ]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {
@@ -48,11 +139,13 @@ export default function ChatPage() {
 
     // Add user message to chat
     const newMsg = {
-      id: messages.length + 1,
+      id: Date.now(), // Use timestamp as ID to avoid conflicts
       user: demoUser,
       text: input,
       time: formatTime(new Date()),
     };
+    
+    // Optimistically update UI
     setMessages((msgs) => [...msgs, newMsg]);
     setInput('');
 
