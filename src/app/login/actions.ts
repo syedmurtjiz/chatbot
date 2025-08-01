@@ -33,14 +33,17 @@ export async function signup(formData: FormData) {
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+    },
   }
 
-  const { error } = await supabase.auth.signUp(data)
+  const { data: signUpData, error } = await supabase.auth.signUp(data)
 
   if (error) {
     return { error: error.message }
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/chat')
+  // Don't redirect here, let the UI handle the success state
+  return { success: true, email: data.email }
 }

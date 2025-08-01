@@ -87,19 +87,46 @@ function LoginForm() {
 function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const formData = new FormData(e.currentTarget);
-    const result = await signup(formData);
-    if (result && result.error) {
-      setError(result.error);
+    setSuccess(false);
+    
+    const form = e.currentTarget as HTMLFormElement;
+    const emailInput = form.elements.namedItem('email') as HTMLInputElement;
+    const passwordInput = form.elements.namedItem('password') as HTMLInputElement;
+    
+    if (!emailInput?.value || !passwordInput?.value) {
+      setError('Please fill in all fields');
       setLoading(false);
       return;
     }
-    // On success, redirect will happen server-side
+
+    const email = emailInput.value;
+    const formData = new FormData(form);
+    
+    try {
+      const result = await signup(formData);
+      if (result?.error) {
+        setError(result.error);
+      } else if (result?.success) {
+        setSuccess(true);
+        setUserEmail(email);
+        // Clear the form
+        form.reset();
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError('An error occurred during signup. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -143,14 +170,21 @@ function SignupForm() {
       {error && (
         <div className="text-red-600 text-sm text-center">{error}</div>
       )}
-      <button
-        type="submit"
-        disabled={loading}
-        className={`w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-2 rounded-lg shadow-lg transition flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-      >
-        {loading && <Spinner />}
-        Sign up
-      </button>
+      {success ? (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Success!</strong>
+          <span className="block sm:inline"> Please check your email at <span className="font-semibold">{userEmail}</span> and click the confirmation link to activate your account.</span>
+        </div>
+      ) : (
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-bold py-2 rounded-lg shadow-lg transition flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
+        >
+          {loading && <Spinner />}
+          Sign up
+        </button>
+      )}
     </form>
   );
 }
