@@ -20,8 +20,8 @@ export async function login(formData: FormData) {
     return { error: error.message }
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/')
+  revalidatePath('/chat', 'layout')
+  redirect('/chat')
 }
 
 export async function signup(formData: FormData) {
