@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useRef, useEffect } from 'react';
 import { logout } from '../logout/actions';
 import { FaUserCircle, FaRobot } from 'react-icons/fa';
