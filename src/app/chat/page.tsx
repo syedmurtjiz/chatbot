@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { logout } from '../logout/actions';
 import { FaUserCircle, FaRobot } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 import { createClient } from '@/utils/supabase/client';
 
 const demoUser = {
@@ -299,14 +300,35 @@ export default function ChatPage() {
             ClaudeSpark
           </span>
         </div>
-        <form action={logout}>
-          <button
-            className="px-4 py-1.5 sm:px-5 sm:py-2 text-sm sm:text-base rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg hover:scale-105 transition-all duration-200 hover:shadow-xl animate-slide-in-right"
-            type="submit"
-          >
-            Sign Out
-          </button>
-        </form>
+        <button
+          onClick={async (e) => {
+            e.preventDefault();
+            const result = await Swal.fire({
+              title: 'Sign Out',
+              text: 'Are you sure you want to sign out?',
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonColor: '#4f46e5',
+              cancelButtonColor: '#6b7280',
+              confirmButtonText: 'Yes, sign out',
+              cancelButtonText: 'Cancel',
+              background: '#ffffff',
+              backdrop: `
+                rgba(0,0,123,0.4)
+                left top
+                no-repeat
+              `
+            });
+            
+            if (result.isConfirmed) {
+              await logout();
+            }
+          }}
+          className="px-4 py-1.5 sm:px-5 sm:py-2 text-sm sm:text-base rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg hover:scale-105 transition-all duration-200 hover:shadow-xl animate-slide-in-right"
+          type="button"
+        >
+          Sign Out
+        </button>
       </header>
 
       {/* Chat Area */}
