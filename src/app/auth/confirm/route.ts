@@ -11,9 +11,13 @@ export async function GET(request: NextRequest) {
     
     if (error) {
       console.error('Error exchanging code for session:', error)
-      return NextResponse.redirect(new URL('/error', request.url))
+      return NextResponse.redirect(new URL(`/error?message=${encodeURIComponent(error.message)}`, request.url))
     }
+    
+    // After successful confirmation, redirect to the chat page
+    return NextResponse.redirect(new URL('/chat', request.url))
   }
   
-  return NextResponse.redirect(new URL('/login', request.url))
+  // If no code is provided, redirect to login with an error
+  return NextResponse.redirect(new URL('/login?error=Invalid confirmation code', request.url))
 }
